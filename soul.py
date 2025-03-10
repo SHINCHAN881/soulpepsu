@@ -8,10 +8,8 @@ from pymongo import MongoClient
 from datetime import datetime, timedelta
 import certifi
 import random
-from subprocess import Popen
 from threading import Thread
 import asyncio
-import aiohttp
 from telebot.types import ReplyKeyboardMarkup, KeyboardButton
 
 loop = asyncio.get_event_loop()
@@ -38,9 +36,7 @@ async def start_asyncio_thread():
     await start_asyncio_loop()
 
 def update_proxy():
-    proxy_list = [
-        "https://80.78.23.49:1080"
-    ]
+    proxy_list = ["https://80.78.23.49:1080"]
     proxy = random.choice(proxy_list)
     telebot.apihelper.proxy = {'https': proxy}
     logging.info("Proxy updated successfully.")
@@ -128,8 +124,6 @@ def approve_or_disapprove_user(message):
     bot.send_message(chat_id, msg_text, parse_mode='Markdown')
     bot.send_message(CHANNEL_ID, msg_text, parse_mode='Markdown')
 
-
-
 # Initialize attack flag, duration, and start time
 bot.attack_in_progress = False
 bot.attack_duration = 0  # Store the duration of the ongoing attack
@@ -145,7 +139,7 @@ def handle_attack_command(message):
         if not user_data or user_data['plan'] == 0:
             bot.send_message(chat_id, "*🚫 Access Denied!*\n"  # Access Denied message
                                        "*You need to be approved to use this bot.*\n"  # Need approval message
-                                       "*Contact the owner for assistance: @SOULCRACKS.*", parse_mode='Markdown')  # Contact owner message
+                                       "*Contact the owner for assistance: @TOPCLIX.*", parse_mode='Markdown')  # Contact owner message
             return
 
         # Check plan limits
@@ -165,10 +159,13 @@ def handle_attack_command(message):
                                        "*Check remaining time with the /when command.*", parse_mode='Markdown')  # Check remaining time
             return
 
+        # Setting up buttons
+        markup = ReplyKeyboardMarkup(resize_keyboard=True)
+        markup.add(KeyboardButton("Start Attack"), KeyboardButton("Stop Attack"))
+        
         bot.send_message(chat_id, "*💣 Ready to launch an attack?*\n"  # Ready to launch message
                                    "*Please provide the target IP, port, and duration in seconds.*\n"  # Provide details message
-                                   "*Example: 167.67.25 6296 60* 🔥\n"  # Example message
-                                   "*Let the chaos begin! 🎉*", parse_mode='Markdown')  # Start chaos message
+                                   "*Let the chaos begin! 🎉*", reply_markup=markup, parse_mode='Markdown')  # Start chaos message
         bot.register_next_step_handler(message, process_attack_command)
 
     except Exception as e:
@@ -189,6 +186,7 @@ def process_attack_command(message):
             bot.send_message(message.chat.id, f"*🔒 Port {target_port} is blocked.*\n"  # Blocked port message
                                                "*Please select a different port to proceed.*", parse_mode='Markdown')  # Different port message
             return
+
         if duration >= 600:
             bot.send_message(message.chat.id, "*⏳ Maximum duration is 599 seconds.*\n"  # Duration limit message
                                                "*Please shorten the duration and try again!*", parse_mode='Markdown')  # Shorten duration message
@@ -207,14 +205,6 @@ def process_attack_command(message):
 
     except Exception as e:
         logging.error(f"Error in processing attack command: {e}")
-
-
-
-
-
-def start_asyncio_thread():
-    asyncio.set_event_loop(loop)
-    loop.run_until_complete(start_asyncio_loop())
 
 @bot.message_handler(commands=['when'])
 def when_command(message):
@@ -243,11 +233,11 @@ def myinfo_command(message):
     if not user_data:
         # User not found in the database
         response = "*❌ Oops! No account information found!* \n"  # Account not found message
-        response += "*For assistance, please contact the owner: @SOULCRACKS* "  # Contact owner message
+        response += "*For assistance, please contact the owner: @TOPCLIX* "  # Contact owner message
     elif user_data.get('plan', 0) == 0:
         # User found but not approved
         response = "*🔒 Your account is still pending approval!* \n"  # Not approved message
-        response += "*Please reach out to the owner for assistance: @SOULCRACKS* 🙏"  # Contact owner message
+        response += "*Please reach out to the owner for assistance: @TOPCLIX* 🙏"  # Contact owner message
     else:
         # User found and approved
         username = message.from_user.username or "Unknown User"  # Default username if none provided
@@ -258,7 +248,7 @@ def myinfo_command(message):
                     f"*💸 PLAN: {plan}* \n"  # User plan
                     f"*⏳ VALID UNTIL: {valid_until}* \n"  # Validity date
                     f"*⏰ CURRENT TIME: {current_time}* \n"  # Current time
-                    f"*🌟 Thank you for being an important part of our community! If you have any questions or need help, just ask! We’re here for you!* 💬🤝")  # Community message
+                    "*🌟 Thank you for being an important part of our community! If you have any questions or need help, just ask! We’re here for you!* 💬🤝")  # Community message
 
     bot.send_message(message.chat.id, response, parse_mode='Markdown')
 
@@ -280,20 +270,16 @@ def rules_command(message):
     except Exception as e:
         print(f"Error while processing /rules command: {e}")
 
-    except Exception as e:
-        print(f"Error while processing /rules command: {e}")
-
-
 @bot.message_handler(commands=['help'])
 def help_command(message):
     help_text = ("*🌟 Welcome to the Ultimate Command Center!*\n\n"
                  "*Here’s what you can do:* \n"
-                 "1. *`/attack` - ⚔️ Launch a powerful attack and show your skills!*\n"
-                 "2. *`/myinfo` - 👤 Check your account info and stay updated.*\n"
-                 "3. *`/owner` - 📞 Get in touch with the mastermind behind this bot!*\n"
-                 "4. *`/when` - ⏳ Curious about the bot's status? Find out now!*\n"
-                 "5. *`/canary` - 🦅 Grab the latest Canary version for cutting-edge features.*\n"
-                 "6. *`/rules` - 📜 Review the rules to keep the game fair and fun.*\n\n"
+                 "1. */attack - ⚔️ Launch a powerful attack and show your skills!*\n"
+                 "2. */myinfo - 👤 Check your account info and stay updated.*\n"
+                 "3. */owner - 📞 Get in touch with the mastermind behind this bot! (Contact: @TOPCLIX)*\n"
+                 "4. */when - ⏳ Curious about the bot's status? Find out now!*\n"
+                 "5. */canary - 🦅 Grab the latest Canary version for cutting-edge features.*\n"
+                 "6. */rules - 📜 Review the rules to keep the game fair and fun.*\n\n"
                  "*💡 Got questions? Don't hesitate to ask! Your satisfaction is our priority!*")
 
     try:
@@ -301,33 +287,19 @@ def help_command(message):
     except Exception as e:
         print(f"Error while processing /help command: {e}")
 
-
-
-@bot.message_handler(commands=['owner'])
-def owner_command(message):
-    response = (
-        "*👤 **Owner Information:**\n\n"
-        "For any inquiries, support, or collaboration opportunities, don't hesitate to reach out to the owner:\n\n"
-        "📩 **Telegram:** @SOULCRACKS\n\n"
-        "💬 **We value your feedback!** Your thoughts and suggestions are crucial for improving our service and enhancing your experience.\n\n"
-        "🌟 **Thank you for being a part of our community!** Your support means the world to us, and we’re always here to help!*\n"
-    )
-    bot.send_message(message.chat.id, response, parse_mode='Markdown')
-
 @bot.message_handler(commands=['start'])
 def start_message(message):
     try:
         bot.send_message(message.chat.id, "*🌍 WELCOME TO DDOS WORLD!* 🎉\n\n"
                                            "*🚀 Get ready to dive into the action!*\n\n"
-                                           "*💣 To unleash your power, use the* `/attack` *command followed by your target's IP and port.* ⚔️\n\n"
-                                           "*🔍 Example: After* `/attack`, *enter:* `ip port duration`.\n\n"
+                                           "*💣 To unleash your power, use the* /attack *command followed by your target's IP and port.* ⚔️\n\n"
+                                           "*🔍 Example: After* /attack, *enter:* ip port duration.\n\n"
                                            "*🔥 Ensure your target is locked in before you strike!*\n\n"
-                                           "*📚 New around here? Check out the* `/help` *command to discover all my capabilities.* 📜\n\n"
+                                           "*📚 New around here? Check out the* /help *command to discover all my capabilities.* 📜\n\n"
                                            "*⚠️ Remember, with great power comes great responsibility! Use it wisely... or let the chaos reign!* 😈💥", 
                                            parse_mode='Markdown')
     except Exception as e:
         print(f"Error while processing /start command: {e}")
-
 
 if __name__ == "__main__":
     asyncio_thread = Thread(target=start_asyncio_thread, daemon=True)
