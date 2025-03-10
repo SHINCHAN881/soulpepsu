@@ -128,6 +128,8 @@ def approve_or_disapprove_user(message):
     bot.send_message(chat_id, msg_text, parse_mode='Markdown')
     bot.send_message(CHANNEL_ID, msg_text, parse_mode='Markdown')
 
+
+
 # Initialize attack flag, duration, and start time
 bot.attack_in_progress = False
 bot.attack_duration = 0  # Store the duration of the ongoing attack
@@ -143,7 +145,7 @@ def handle_attack_command(message):
         if not user_data or user_data['plan'] == 0:
             bot.send_message(chat_id, "*🚫 Access Denied!*\n"  # Access Denied message
                                        "*You need to be approved to use this bot.*\n"  # Need approval message
-                                       "*Contact the owner for assistance: @topclix.*", parse_mode='Markdown')  # Contact owner message
+                                       "*Contact the owner for assistance: @SOULCRACKS.*", parse_mode='Markdown')  # Contact owner message
             return
 
         # Check plan limits
@@ -206,6 +208,10 @@ def process_attack_command(message):
     except Exception as e:
         logging.error(f"Error in processing attack command: {e}")
 
+
+
+
+
 def start_asyncio_thread():
     asyncio.set_event_loop(loop)
     loop.run_until_complete(start_asyncio_loop())
@@ -228,6 +234,7 @@ def when_command(message):
         bot.send_message(chat_id, "*❌ No attack is currently in progress!*\n"
                                    "*🔄 Feel free to initiate your attack whenever you're ready!*", parse_mode='Markdown')
 
+
 @bot.message_handler(commands=['myinfo'])
 def myinfo_command(message):
     user_id = message.from_user.id
@@ -236,11 +243,11 @@ def myinfo_command(message):
     if not user_data:
         # User not found in the database
         response = "*❌ Oops! No account information found!* \n"  # Account not found message
-        response += "*For assistance, please contact the owner: @topclix* "  # Contact owner message
+        response += "*For assistance, please contact the owner: @SOULCRACKS* "  # Contact owner message
     elif user_data.get('plan', 0) == 0:
         # User found but not approved
         response = "*🔒 Your account is still pending approval!* \n"  # Not approved message
-        response += "*Please reach out to the owner for assistance: @topclix* 🙏"  # Contact owner message
+        response += "*Please reach out to the owner for assistance: @SOULCRACKS* 🙏"  # Contact owner message
     else:
         # User found and approved
         username = message.from_user.username or "Unknown User"  # Default username if none provided
@@ -273,6 +280,10 @@ def rules_command(message):
     except Exception as e:
         print(f"Error while processing /rules command: {e}")
 
+    except Exception as e:
+        print(f"Error while processing /rules command: {e}")
+
+
 @bot.message_handler(commands=['help'])
 def help_command(message):
     help_text = ("*🌟 Welcome to the Ultimate Command Center!*\n\n"
@@ -290,12 +301,14 @@ def help_command(message):
     except Exception as e:
         print(f"Error while processing /help command: {e}")
 
+
+
 @bot.message_handler(commands=['owner'])
 def owner_command(message):
     response = (
         "*👤 **Owner Information:**\n\n"
         "For any inquiries, support, or collaboration opportunities, don't hesitate to reach out to the owner:\n\n"
-        "📩 **Telegram:** @topclix\n\n"
+        "📩 **Telegram:** @SOULCRACKS\n\n"
         "💬 **We value your feedback!** Your thoughts and suggestions are crucial for improving our service and enhancing your experience.\n\n"
         "🌟 **Thank you for being a part of our community!** Your support means the world to us, and we’re always here to help!*\n"
     )
@@ -314,6 +327,7 @@ def start_message(message):
                                            parse_mode='Markdown')
     except Exception as e:
         print(f"Error while processing /start command: {e}")
+
 
 if __name__ == "__main__":
     asyncio_thread = Thread(target=start_asyncio_thread, daemon=True)
